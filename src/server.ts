@@ -52,15 +52,20 @@ app.use(errorHandler);
 // Démarrage du serveur
 async function start() {
   try {
-    // Connecter Redis
+    // Connecter Redis (non bloquant)
     if (env.REDIS_URL) {
-      await connectRedis();
+      try {
+        await connectRedis();
+      } catch (redisError) {
+        console.warn('⚠️ Redis connection failed, continuing without cache:', redisError);
+      }
     }
 
     const port = parseInt(env.PORT, 10);
-    app.listen(port, () => {
+    app.listen(port, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${port}`);
       console.log(`📍 Environment: ${env.NODE_ENV}`);
+      console.log(`✅ Health check available at http://0.0.0.0:${port}/health`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
