@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Table des organisations (entreprises)
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users    User[]
+  jobs     Job[]
+  apiConfig OrganizationApiConfig?
+
+  @@map("organizations")
+}
+
+// Table des utilisateurs
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  passwordHash   String       @map("password_hash")
+  organizationId String       @map("organization_id")
+  role           UserRole     @default(MEMBER) // OWNER, ADMIN, MEMBER
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  jobs         Job[]        // Jobs créés par cet utilisateur
+
+  @@map("users")
+}
+
+enum UserRole {
+  OWNER   // Créateur de l'organisation
+  ADMIN   // Peut gérer les membres et la config
+  MEMBER  // Accès standard
+}
+
+// Configuration API par organisation (clés chiffrées - partagées)
+model OrganizationApiConfig {
+  id                  String   @id @default(uuid())
+  organizationId      String   @unique @map("organization_id")
+  openaiApiKey        String?  @map("openai_api_key") // Chiffré
+  twilioAccountSid    String?  @map("twilio_account_sid") // Chiffré
+  twilioAuthToken     String?  @map("twilio_auth_token") // Chiffré
+  twilioWhatsappNumber String?  @map("twilio_whatsapp_number")
+  awsAccessKeyId      String?  @map("aws_access_key_id") // Chiffré
+  awsSecretAccessKey  String?  @map("aws_secret_access_key") // Chiffré
+  awsS3Bucket         String?  @map("aws_s3_bucket")
+  awsRegion           String?  @map("aws_region") @default("eu-west-1")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("organization_api_configs")
+}
+
+// Table des offres d'emploi
+model Job {
+  id             String    @id @default(uuid())
+  organizationId String    @map("organization_id") // Organisation propriétaire
+  userId         String    @map("user_id") // Utilisateur créateur
+  title          String
+  description    String    @db.Text
+  essentialCriteria Json    @map("essential_criteria") // [{name, type, value}, ...]
+  niceToHave     Json      @map("nice_to_have") // [{name, type, value}, ...]
+  whatsappNumber String?   @map("whatsapp_number")
+  whatsappLink   String?   @map("whatsapp_link")
+  qrCodeUrl      String?   @map("qr_code_url")
+  status         JobStatus @default(ACTIVE)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  candidates   Candidate[]
+
+  @@index([organizationId])
+  @@map("jobs")
+}
+
+enum JobStatus {
+  ACTIVE
+  PAUSED
+  CLOSED
+}
+
+// Table des candidats
+model Candidate {
+  id           String           @id @default(uuid())
+  jobId        String           @map("job_id")
+  phoneNumber  String           // Chiffré
+  phoneHash    String           @map("phone_hash") // Hash SHA-256 pour recherche rapide (non nullable)
+  name         String?
+  email        String?
+  cvUrl        String?          @map("cv_url")
+  cvParsedData Json?            @map("cv_parsed_data") @db.JsonB
+  score        Int?             // Score sur 100
+  scoreDetails Json?            @map("score_details") @db.JsonB
+  status       CandidateStatus  @default(IN_PROGRESS)
+  summary      String?          @db.Text // Résumé généré par l'IA
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  job          Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  conversation Conversation?
+
+  @@unique([jobId, phoneHash])
+  @@index([phoneHash])
+  @@index([jobId, phoneHash])
+  @@map("candidates")
+}
+
+enum CandidateStatus {
+  IN_PROGRESS
+  COMPLETED
+  ACCEPTED
+  REJECTED
+}
+
+// Table des conversations
+model Conversation {
+  id          String   @id @default(uuid())
+  candidateId String   @unique @map("candidate_id")
+  messages    Json     @default("[]") @db.JsonB // Array de {role, content, timestamp}
+  currentStep String   @default("intro") @map("current_step") // 'intro', 'cv', 'questions', 'completed'
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@map("conversations")
+}
+

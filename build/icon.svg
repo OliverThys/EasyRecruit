@@ -1,0 +1,33 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4F46E5;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="115" fill="url(#grad1)"/>
+  
+  <!-- Badge circle -->
+  <circle cx="128" cy="128" r="56" fill="white" opacity="0.95"/>
+  
+  <!-- Person silhouette -->
+  <circle cx="128" cy="96" r="16" fill="url(#grad2)"/>
+  <rect x="104" y="116" width="48" height="56" rx="4" fill="url(#grad2)"/>
+  <rect x="112" y="116" width="32" height="24" rx="4" fill="url(#grad2)"/>
+  
+  <!-- Checkmark -->
+  <path d="M 118 120 L 122 124 L 134 108" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Sparkles -->
+  <circle cx="90" cy="90" r="6" fill="white" opacity="0.7"/>
+  <circle cx="166" cy="90" r="5" fill="white" opacity="0.6"/>
+  <circle cx="90" cy="166" r="5" fill="white" opacity="0.6"/>
+  <circle cx="166" cy="166" r="6" fill="white" opacity="0.7"/>
+</svg>
+

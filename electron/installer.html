@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation EasyRecruit</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: white;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 30px;
+    }
+
+    .progress-container {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      height: 8px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: white;
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .status {
+      font-size: 16px;
+      margin-top: 20px;
+      min-height: 24px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      margin: 8px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .step-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .step-icon.pending {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .step-icon.loading {
+      background: #ffd700;
+      animation: spin 1s linear infinite;
+    }
+
+    .step-icon.success {
+      background: #4caf50;
+    }
+
+    .step-icon.error {
+      background: #f44336;
+    }
+
+    .link-button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: white;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .link-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .missing-dependency {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 4px solid #ffd700;
+    }
+
+    .missing-dependency h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .missing-dependency p {
+      margin: 8px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">E</div>
+    <h1>EasyRecruit</h1>
+    <p class="subtitle">Installation en cours...</p>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div id="steps">
+      <div class="step">
+        <span>Vérification des dépendances</span>
+        <div class="step-icon pending" id="step1">○</div>
+      </div>
+      <div class="step">
+        <span>Installation Node.js</span>
+        <div class="step-icon pending" id="step2">○</div>
+      </div>
+      <div class="step">
+        <span>Installation Docker</span>
+        <div class="step-icon pending" id="step3">○</div>
+      </div>
+      <div class="step">
+        <span>Configuration de la base de données</span>
+        <div class="step-icon pending" id="step4">○</div>
+      </div>
+      <div class="step">
+        <span>Finalisation</span>
+        <div class="step-icon pending" id="step5">○</div>
+      </div>
+    </div>
+
+    <div class="status" id="status">Préparation de l'installation...</div>
+    
+    <!-- Zone pour les dépendances manquantes -->
+    <div id="missingDeps" style="display: none;">
+      <div class="missing-dependency">
+        <h3>⚠️ Dépendances manquantes</h3>
+        <div id="missingList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const progressBar = document.getElementById('progressBar');
+    const status = document.getElementById('status');
+    
+    let currentStep = 0;
+    const totalSteps = 5;
+
+    function updateProgress(step, statusType, message) {
+      const stepElement = document.getElementById(`step${step}`);
+      stepElement.className = `step-icon ${statusType}`;
+      
+      if (statusType === 'loading') {
+        stepElement.textContent = '⟳';
+      } else if (statusType === 'success') {
+        stepElement.textContent = '✓';
+      } else if (statusType === 'error') {
+        stepElement.textContent = '✗';
+      }
+
+      if (message) {
+        status.textContent = message;
+      }
+
+      const progress = (step / totalSteps) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    // Vérifier les dépendances
+    async function checkDependencies() {
+      updateProgress(1, 'loading', 'Vérification des dépendances...');
+      
+      const missing = [];
+      
+      // Vérifier Node.js (simulation - à remplacer par vraie vérification)
+      const hasNode = await checkNodeJS();
+      if (!hasNode) {
+        missing.push({
+          name: 'Node.js',
+          description: 'Node.js 18+ est requis pour exécuter EasyRecruit',
+          url: 'https://nodejs.org/',
+          downloadText: 'Télécharger Node.js'
+        });
+      }
+      
+      // Vérifier Docker (simulation)
+      const hasDocker = await checkDocker();
+      if (!hasDocker) {
+        missing.push({
+          name: 'Docker Desktop',
+          description: 'Docker Desktop est requis pour la base de données PostgreSQL et Redis',
+          url: 'https://www.docker.com/products/docker-desktop',
+          downloadText: 'Télécharger Docker Desktop'
+        });
+      }
+      
+      if (missing.length > 0) {
+        updateProgress(1, 'error', 'Dépendances manquantes détectées');
+        showMissingDependencies(missing);
+        return false;
+      }
+      
+      updateProgress(1, 'success', 'Toutes les dépendances sont installées');
+      return true;
+    }
+    
+    // Afficher les dépendances manquantes
+    function showMissingDependencies(missing) {
+      const container = document.getElementById('missingDeps');
+      const list = document.getElementById('missingList');
+      
+      container.style.display = 'block';
+      list.innerHTML = '';
+      
+      missing.forEach(dep => {
+        const item = document.createElement('div');
+        item.style.marginBottom = '15px';
+        item.innerHTML = `
+          <p><strong>${dep.name}</strong></p>
+          <p>${dep.description}</p>
+          <a href="${dep.url}" target="_blank" class="link-button">${dep.downloadText}</a>
+        `;
+        list.appendChild(item);
+      });
+      
+      status.textContent = `Veuillez installer les dépendances manquantes et relancer l'installation.`;
+    }
+    
+    // Fonctions de vérification (à remplacer par vraies vérifications via Electron)
+    async function checkNodeJS() {
+      // Simuler une vérification - dans la vraie app, utiliser exec('node --version')
+      return new Promise(resolve => {
+        setTimeout(() => {
+          // Pour la démo, on simule que c'est installé
+          // Dans la vraie app, on vérifierait réellement
+          resolve(true);
+        }, 500);
+      });
+    }
+    
+    async function checkDocker() {
+      // Simuler une vérification
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(true);
+        }, 500);
+      });
+    }
+    
+    // Simulation de l'installation (à remplacer par la vraie logique)
+    async function startInstallation() {
+      // Vérifier d'abord les dépendances
+      const depsOk = await checkDependencies();
+      if (!depsOk) {
+        return; // Arrêter si des dépendances manquent
+      }
+
+      updateProgress(2, 'loading', 'Installation Node.js...');
+      await sleep(2000);
+      updateProgress(2, 'success', 'Node.js installé');
+
+      updateProgress(3, 'loading', 'Installation Docker...');
+      await sleep(2000);
+      updateProgress(3, 'success', 'Docker installé');
+
+      updateProgress(4, 'loading', 'Configuration de la base de données...');
+      await sleep(1500);
+      updateProgress(4, 'success', 'Base de données configurée');
+
+      updateProgress(5, 'loading', 'Finalisation...');
+      await sleep(1000);
+      updateProgress(5, 'success', 'Installation terminée !');
+
+      status.textContent = 'Installation terminée avec succès !';
+      progressBar.style.width = '100%';
+
+      setTimeout(() => {
+        // Fermer la fenêtre d'installation
+        if (window.electronAPI) {
+          // Notification que l'installation est terminée
+        }
+      }, 2000);
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Démarrer l'installation
+    startInstallation();
+  </script>
+</body>
+</html>
+
