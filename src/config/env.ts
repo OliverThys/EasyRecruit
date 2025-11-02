@@ -34,21 +34,38 @@ export type Env = z.infer<typeof envSchema>;
 function validateEnv(): Env {
   try {
     console.log('🔍 Validating environment variables...');
+    console.log('📋 Available environment variables:', Object.keys(process.env).filter(k => !k.includes('SECRET') && !k.includes('PASSWORD') && !k.includes('TOKEN') && !k.includes('KEY')).join(', '));
+    
     const validated = envSchema.parse(process.env);
     console.log('✅ Environment variables validated');
+    console.log(`✅ NODE_ENV: ${validated.NODE_ENV}`);
+    console.log(`✅ PORT: ${validated.PORT}`);
+    console.log(`✅ DATABASE_URL: ${validated.DATABASE_URL ? '✅ Set' : '❌ Missing'}`);
+    console.log(`✅ JWT_SECRET: ${validated.JWT_SECRET ? '✅ Set (length: ' + validated.JWT_SECRET.length + ')' : '❌ Missing'}`);
+    console.log(`✅ ENCRYPTION_KEY: ${validated.ENCRYPTION_KEY ? '✅ Set (length: ' + validated.ENCRYPTION_KEY.length + ')' : '❌ Missing'}`);
     return validated;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error('❌ Erreur de configuration environnement:');
+      console.error('\n❌❌❌ ERREUR DE CONFIGURATION ENVIRONNEMENT ❌❌❌');
       console.error('Missing or invalid environment variables:');
+      console.error('─────────────────────────────────────────────────────');
       error.errors.forEach((err) => {
         const path = err.path.join('.');
-        console.error(`  - ${path}: ${err.message}`);
-        if (process.env[path] === undefined) {
-          console.error(`    (Variable ${path} is not set)`);
+        const isSet = process.env[path] !== undefined;
+        console.error(`  ❌ ${path}`);
+        console.error(`     Message: ${err.message}`);
+        if (!isSet) {
+          console.error(`     Status: NOT SET (variable is missing)`);
+        } else {
+          console.error(`     Status: SET but invalid`);
+          console.error(`     Value: ${process.env[path]?.substring(0, 20)}... (truncated for security)`);
         }
+        console.error('');
       });
-      console.error('\nPlease check your environment variables configuration.');
+      console.error('─────────────────────────────────────────────────────');
+      console.error('⚠️  Le serveur ne peut pas démarrer sans ces variables.');
+      console.error('📖 Voir RAILWAY_ENV_VARS.md pour les instructions de configuration.');
+      console.error('\n');
       process.exit(1);
     }
     throw error;
