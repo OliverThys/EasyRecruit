@@ -33,13 +33,22 @@ export type Env = z.infer<typeof envSchema>;
 
 function validateEnv(): Env {
   try {
-    return envSchema.parse(process.env);
+    console.log('🔍 Validating environment variables...');
+    const validated = envSchema.parse(process.env);
+    console.log('✅ Environment variables validated');
+    return validated;
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error('❌ Erreur de configuration environnement:');
+      console.error('Missing or invalid environment variables:');
       error.errors.forEach((err) => {
-        console.error(`  - ${err.path.join('.')}: ${err.message}`);
+        const path = err.path.join('.');
+        console.error(`  - ${path}: ${err.message}`);
+        if (process.env[path] === undefined) {
+          console.error(`    (Variable ${path} is not set)`);
+        }
       });
+      console.error('\nPlease check your environment variables configuration.');
       process.exit(1);
     }
     throw error;
