@@ -205,7 +205,7 @@ export async function handleIncomingWhatsAppMessage(
         where: { id: candidate.id },
         data: {
           cvUrl,
-          cvParsedData,
+          cvParsedData: cvParsedData as any, // Cast to satisfy Prisma Json type
           name: cvParsedData.name || candidate.name,
           email: cvParsedData.email || candidate.email,
         },
@@ -292,7 +292,7 @@ async function processCandidateMessage(
   // Construire le contexte pour l'agent IA
   const messages = (conversation.messages as any[]) || [];
   const conversationHistory = messages.map((m: any) => ({
-    role: m.role === 'candidate' ? 'user' : 'assistant',
+    role: (m.role === 'candidate' ? 'user' : 'assistant') as 'user' | 'system' | 'assistant',
     content: m.content,
   }));
 
@@ -307,8 +307,8 @@ async function processCandidateMessage(
     conversationHistory,
     currentStep: conversation.currentStep,
     candidateInfo: {
-      name: candidate.name,
-      email: candidate.email,
+      name: candidate.name ?? undefined,
+      email: candidate.email ?? undefined,
       cvReceived: !!candidate.cvParsedData,
     },
   };
@@ -397,7 +397,7 @@ async function processNextAgentMessage(
 
   const messages = (conversation.messages as any[]) || [];
   const conversationHistory = messages.map((m: any) => ({
-    role: m.role === 'candidate' ? 'user' : 'assistant',
+    role: (m.role === 'candidate' ? 'user' : 'assistant') as 'user' | 'system' | 'assistant',
     content: m.content,
   }));
 
@@ -412,8 +412,8 @@ async function processNextAgentMessage(
     conversationHistory,
     currentStep: 'questions',
     candidateInfo: {
-      name: candidate.name,
-      email: candidate.email,
+      name: candidate.name ?? undefined,
+      email: candidate.email ?? undefined,
       cvReceived: true,
     },
   };
@@ -429,7 +429,7 @@ async function processNextAgentMessage(
   const updatedMessages = [
     ...messages,
     {
-      role: 'agent',
+      role: 'assistant' as const, // OpenAI uses 'assistant' not 'agent'
       content: agentResponse.response,
       timestamp: new Date().toISOString(),
     },
@@ -516,7 +516,7 @@ async function finalizeCandidate(
     where: { id: candidateId },
     data: {
       score: Math.round(scoreResult.totalScore),
-      scoreDetails: scoreResult.details,
+      scoreDetails: scoreResult.details as any, // Cast to satisfy Prisma Json type
       summary,
       status: 'COMPLETED',
     },

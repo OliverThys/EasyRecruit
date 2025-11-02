@@ -157,7 +157,7 @@ export async function getSignedUrl(
     bucket?: string;
     region?: string;
   },
-  expiresIn: number = 3600
+  _expiresIn: number = 3600
 ): Promise<string> {
   // TODO: Implémenter avec getSignedUrlCommand si nécessaire
   // Pour l'instant, on retourne l'URL publique si les fichiers sont publics

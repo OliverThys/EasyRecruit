@@ -264,7 +264,7 @@ router.delete('/:id/gdpr-delete', async (req: AuthRequest, res: Response, next) 
         email: 'deleted@deleted.com',
         phoneNumber: 'DELETED',
         cvUrl: null,
-        cvParsedData: null,
+        cvParsedData: null as any, // Prisma Json null
       },
     });
 

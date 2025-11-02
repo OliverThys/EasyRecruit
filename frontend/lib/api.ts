@@ -55,6 +55,18 @@ export const api = {
 
   getMe: () => fetchApi('/api/auth/me'),
 
+  forgotPassword: (email: string) =>
+    fetchApi('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+
+  resetPassword: (token: string, password: string) =>
+    fetchApi('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
+    }),
+
   // Jobs
   getJobs: () => fetchApi('/api/jobs'),
   

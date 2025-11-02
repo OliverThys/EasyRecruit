@@ -212,9 +212,9 @@ router.post('/:id/generate-whatsapp', async (req: AuthRequest, res: Response, ne
     }
 
     // Générer le lien WhatsApp avec code court (mapping Redis)
-    const { link: whatsappLink, shortCode } = await generateWhatsAppLinkWithCode(
+    const { link: whatsappLink } = await generateWhatsAppLinkWithCode(
       job.id,
-      env.TWILIO_WHATSAPP_NUMBER
+      env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+1234567890' // Fallback si non configuré
     );
 
     // Générer le QR code

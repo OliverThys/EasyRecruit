@@ -3,8 +3,6 @@
  * À utiliser si vous choisissez 360Dialog au lieu de Twilio
  */
 
-import { env } from '../config/env';
-
 const API_KEY = process.env.DIALOG360_API_KEY || '';
 const API_URL = 'https://waba-v2.360dialog.io/v1';
 
@@ -32,7 +30,7 @@ export async function sendWhatsAppMessage360Dialog(to: string, message: string):
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = await response.json().catch(() => ({ error: { message: 'Unknown error' } })) as { error?: { message?: string } };
       throw new Error(`Erreur 360Dialog: ${error.error?.message || response.statusText}`);
     }
 

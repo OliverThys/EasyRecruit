@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-import { AppError } from '../middleware/errorHandler';
 import { handleIncomingWhatsAppMessage } from '../services/conversation.service';
 
 const router = Router();

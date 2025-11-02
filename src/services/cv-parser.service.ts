@@ -50,7 +50,7 @@ async function extractTextFromPDF(buffer: Buffer): Promise<string> {
 /**
  * Extrait le texte d'un fichier Word (simplifié - nécessiterait une lib spécifique)
  */
-async function extractTextFromDocx(buffer: Buffer): Promise<string> {
+async function extractTextFromDocx(_buffer: Buffer): Promise<string> {
   // TODO: Implémenter avec une lib comme 'docx' ou 'mammoth'
   // Pour l'instant, on retourne une chaîne vide
   throw new Error('Extraction DOCX non implémentée - veuillez utiliser un PDF');

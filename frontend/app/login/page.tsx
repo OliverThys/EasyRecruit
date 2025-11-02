@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Mail, Lock, Building2, LogIn, UserPlus } from 'lucide-react';
@@ -153,6 +154,17 @@ export default function LoginPage() {
               <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2">
                 <span>⚠️</span>
                 <span>{error}</span>
+              </div>
+            )}
+
+            {isLogin && (
+              <div className="text-right">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Mot de passe oublié ?
+                </Link>
               </div>
             )}
 

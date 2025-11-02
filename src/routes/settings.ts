@@ -63,9 +63,9 @@ router.get('/api-config', authenticate, async (req: AuthRequest, res: Response, 
       awsRegion: apiConfig.awsRegion || 'eu-west-1',
     };
 
-    res.json({ apiConfig: decrypted });
+    return res.json({ apiConfig: decrypted });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -159,7 +159,7 @@ router.put('/api-config', authenticate, async (req: AuthRequest, res: Response, 
       },
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -191,7 +191,7 @@ router.get('/status', authenticate, async (req: AuthRequest, res: Response, next
 
     res.json({ status });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

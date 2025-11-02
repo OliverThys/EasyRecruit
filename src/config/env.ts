@@ -19,6 +19,14 @@ const envSchema = z.object({
   ENCRYPTION_KEY: z.string().min(32),
   FRONTEND_URL: z.string().url().default('http://localhost:3000'),
   N8N_WEBHOOK_URL: z.string().url().optional(),
+  // Email configuration (SMTP)
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.string().optional(),
+  SMTP_SECURE: z.string().optional().transform((val) => val === 'true'),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_FROM: z.string().email().optional(),
+  SMTP_FROM_NAME: z.string().optional().default('EasyRecruit'),
 });
 
 export type Env = z.infer<typeof envSchema>;
