@@ -29,9 +29,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/votre-username/easyrecruit.git"
+    "url": "https://github.com/OliverThys/EasyRecruit.git"
   },
-  "homepage": "https://github.com/votre-username/easyrecruit#readme",
+  "homepage": "https://github.com/OliverThys/EasyRecruit#readme",
   "build": {
     "appId": "com.maolys.easyrecruit",
     "productName": "EasyRecruit",
@@ -89,8 +89,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "votre-username",
-      "repo": "easyrecruit",
+      "owner": "OliverThys",
+      "repo": "EasyRecruit",
       "releaseType": "release",
       "private": false
     }

@@ -242,8 +242,8 @@ if (!isDev) {
   // Configurer autoUpdater pour GitHub
   autoUpdater.setFeedURL({
     provider: 'github',
-    owner: 'votre-username', // À remplacer par votre username GitHub
-    repo: 'easyrecruit', // À remplacer par votre nom de repo
+    owner: 'OliverThys',
+    repo: 'EasyRecruit',
   });
 
   // Vérifier les mises à jour au démarrage
